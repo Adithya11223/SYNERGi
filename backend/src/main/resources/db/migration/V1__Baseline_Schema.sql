@@ -24,7 +24,6 @@ SET row_security = off;
 -- *not* creating schema, since initdb creates it
 
 
-ALTER SCHEMA public OWNER TO postgres;
 
 --
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
@@ -56,7 +55,6 @@ CREATE TABLE public.announcements (
 );
 
 
-ALTER TABLE public.announcements OWNER TO postgres;
 
 --
 -- Name: announcements_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -87,7 +85,6 @@ CREATE TABLE public.application_status_history (
 );
 
 
-ALTER TABLE public.application_status_history OWNER TO postgres;
 
 --
 -- Name: application_status_history_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -135,7 +132,6 @@ CREATE TABLE public.call_analytics (
 );
 
 
-ALTER TABLE public.call_analytics OWNER TO postgres;
 
 --
 -- Name: call_analytics_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -161,7 +157,6 @@ CREATE TABLE public.call_log_deletions (
 );
 
 
-ALTER TABLE public.call_log_deletions OWNER TO postgres;
 
 --
 -- Name: call_logs; Type: TABLE; Schema: public; Owner: postgres
@@ -179,7 +174,6 @@ CREATE TABLE public.call_logs (
 );
 
 
-ALTER TABLE public.call_logs OWNER TO postgres;
 
 --
 -- Name: call_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -209,7 +203,6 @@ CREATE TABLE public.chat_members (
 );
 
 
-ALTER TABLE public.chat_members OWNER TO postgres;
 
 --
 -- Name: chat_members_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -235,7 +228,6 @@ CREATE TABLE public.chat_message_deletions (
 );
 
 
-ALTER TABLE public.chat_message_deletions OWNER TO postgres;
 
 --
 -- Name: chat_messages; Type: TABLE; Schema: public; Owner: postgres
@@ -259,7 +251,6 @@ CREATE TABLE public.chat_messages (
 );
 
 
-ALTER TABLE public.chat_messages OWNER TO postgres;
 
 --
 -- Name: chat_messages_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -296,7 +287,6 @@ CREATE TABLE public.chat_notifications (
 );
 
 
-ALTER TABLE public.chat_notifications OWNER TO postgres;
 
 --
 -- Name: chat_notifications_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -333,7 +323,6 @@ CREATE TABLE public.chat_rooms (
 );
 
 
-ALTER TABLE public.chat_rooms OWNER TO postgres;
 
 --
 -- Name: chat_rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -361,7 +350,6 @@ CREATE TABLE public.chat_settings (
 );
 
 
-ALTER TABLE public.chat_settings OWNER TO postgres;
 
 --
 -- Name: chat_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -390,7 +378,6 @@ CREATE TABLE public.custom_roles (
 );
 
 
-ALTER TABLE public.custom_roles OWNER TO postgres;
 
 --
 -- Name: custom_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -422,7 +409,6 @@ CREATE TABLE public.job_offers (
 );
 
 
-ALTER TABLE public.job_offers OWNER TO postgres;
 
 --
 -- Name: job_offers_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -452,7 +438,6 @@ CREATE TABLE public.meeting_chats (
 );
 
 
-ALTER TABLE public.meeting_chats OWNER TO postgres;
 
 --
 -- Name: meeting_chats_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -483,7 +468,6 @@ CREATE TABLE public.meeting_participants (
 );
 
 
-ALTER TABLE public.meeting_participants OWNER TO postgres;
 
 --
 -- Name: meeting_participants_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -523,7 +507,6 @@ CREATE TABLE public.meetings (
 );
 
 
-ALTER TABLE public.meetings OWNER TO postgres;
 
 --
 -- Name: meetings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -555,7 +538,6 @@ CREATE TABLE public.message_attachments (
 );
 
 
-ALTER TABLE public.message_attachments OWNER TO postgres;
 
 --
 -- Name: message_attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -584,7 +566,6 @@ CREATE TABLE public.message_reactions (
 );
 
 
-ALTER TABLE public.message_reactions OWNER TO postgres;
 
 --
 -- Name: message_reactions_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -613,7 +594,6 @@ CREATE TABLE public.message_read_receipts (
 );
 
 
-ALTER TABLE public.message_read_receipts OWNER TO postgres;
 
 --
 -- Name: message_read_receipts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -642,7 +622,6 @@ CREATE TABLE public.message_statuses (
 );
 
 
-ALTER TABLE public.message_statuses OWNER TO postgres;
 
 --
 -- Name: message_statuses_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -673,7 +652,6 @@ CREATE TABLE public.privacy_settings (
 );
 
 
-ALTER TABLE public.privacy_settings OWNER TO postgres;
 
 --
 -- Name: privacy_settings_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -699,7 +677,6 @@ CREATE TABLE public.role_permissions (
 );
 
 
-ALTER TABLE public.role_permissions OWNER TO postgres;
 
 --
 -- Name: startup_applications; Type: TABLE; Schema: public; Owner: postgres
@@ -737,7 +714,6 @@ CREATE TABLE public.startup_applications (
 );
 
 
-ALTER TABLE public.startup_applications OWNER TO postgres;
 
 --
 -- Name: startup_applications_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -767,7 +743,6 @@ CREATE TABLE public.startup_attachments (
 );
 
 
-ALTER TABLE public.startup_attachments OWNER TO postgres;
 
 --
 -- Name: startup_attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -795,7 +770,6 @@ CREATE TABLE public.startup_bookmarks (
 );
 
 
-ALTER TABLE public.startup_bookmarks OWNER TO postgres;
 
 --
 -- Name: startup_bookmarks_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -822,7 +796,6 @@ CREATE TABLE public.startup_roles (
 );
 
 
-ALTER TABLE public.startup_roles OWNER TO postgres;
 
 --
 -- Name: startup_roles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -849,7 +822,6 @@ CREATE TABLE public.startup_skills (
 );
 
 
-ALTER TABLE public.startup_skills OWNER TO postgres;
 
 --
 -- Name: startup_skills_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -877,7 +849,6 @@ CREATE TABLE public.startup_views (
 );
 
 
-ALTER TABLE public.startup_views OWNER TO postgres;
 
 --
 -- Name: startup_views_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -940,7 +911,6 @@ CREATE TABLE public.startups (
 );
 
 
-ALTER TABLE public.startups OWNER TO postgres;
 
 --
 -- Name: startups_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -966,7 +936,6 @@ CREATE TABLE public.user_education (
 );
 
 
-ALTER TABLE public.user_education OWNER TO postgres;
 
 --
 -- Name: user_experience; Type: TABLE; Schema: public; Owner: postgres
@@ -978,7 +947,6 @@ CREATE TABLE public.user_experience (
 );
 
 
-ALTER TABLE public.user_experience OWNER TO postgres;
 
 --
 -- Name: user_profiles; Type: TABLE; Schema: public; Owner: postgres
@@ -1008,7 +976,6 @@ CREATE TABLE public.user_profiles (
 );
 
 
-ALTER TABLE public.user_profiles OWNER TO postgres;
 
 --
 -- Name: user_profiles_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1034,7 +1001,6 @@ CREATE TABLE public.user_projects (
 );
 
 
-ALTER TABLE public.user_projects OWNER TO postgres;
 
 --
 -- Name: user_skills; Type: TABLE; Schema: public; Owner: postgres
@@ -1046,7 +1012,6 @@ CREATE TABLE public.user_skills (
 );
 
 
-ALTER TABLE public.user_skills OWNER TO postgres;
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: postgres
@@ -1077,7 +1042,6 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1108,7 +1072,6 @@ CREATE TABLE public.workspace_activity_logs (
 );
 
 
-ALTER TABLE public.workspace_activity_logs OWNER TO postgres;
 
 --
 -- Name: workspace_activity_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1140,7 +1103,6 @@ CREATE TABLE public.workspace_announcements (
 );
 
 
-ALTER TABLE public.workspace_announcements OWNER TO postgres;
 
 --
 -- Name: workspace_announcements_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1173,7 +1135,6 @@ CREATE TABLE public.workspace_calendar_events (
 );
 
 
-ALTER TABLE public.workspace_calendar_events OWNER TO postgres;
 
 --
 -- Name: workspace_calendar_events_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1207,7 +1168,6 @@ CREATE TABLE public.workspace_files (
 );
 
 
-ALTER TABLE public.workspace_files OWNER TO postgres;
 
 --
 -- Name: workspace_files_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1240,7 +1200,6 @@ CREATE TABLE public.workspace_members (
 );
 
 
-ALTER TABLE public.workspace_members OWNER TO postgres;
 
 --
 -- Name: workspace_members_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1273,7 +1232,6 @@ CREATE TABLE public.workspace_roadmap_milestones (
 );
 
 
-ALTER TABLE public.workspace_roadmap_milestones OWNER TO postgres;
 
 --
 -- Name: workspace_roadmap_milestones_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
@@ -1311,7 +1269,6 @@ CREATE TABLE public.workspace_tasks (
 );
 
 
-ALTER TABLE public.workspace_tasks OWNER TO postgres;
 
 --
 -- Name: workspace_tasks_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
