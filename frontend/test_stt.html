@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Standalone STT Test</title>
+</head>
+<body>
+    <h1>Speech Recognition Test</h1>
+    <button id="startBtn">Start Recognition</button>
+    <button id="stopBtn">Stop Recognition</button>
+    <div id="status" style="margin-top:20px; font-weight:bold;">Status: IDLE</div>
+    <div id="output" style="margin-top:20px; border:1px solid #ccc; padding:10px; min-height:100px;"></div>
+
+    <script>
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        
+        if (!SpeechRecognition) {
+            document.getElementById('status').innerText = 'Speech recognition NOT supported in this browser.';
+        } else {
+            document.getElementById('status').innerText = 'Speech recognition supported.';
+        }
+
+        let recognition;
+
+        document.getElementById('startBtn').onclick = () => {
+            document.getElementById('output').innerText = '';
+            document.getElementById('status').innerText = 'Status: STARTING...';
+            console.log("Creating new SpeechRecognition instance");
+            
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = navigator.language || 'en-US';
+
+            recognition.onstart = () => { console.log("onstart fired"); document.getElementById('status').innerText = 'Status: onstart'; };
+            recognition.onaudiostart = () => { console.log("onaudiostart fired"); document.getElementById('status').innerText = 'Status: onaudiostart'; };
+            recognition.onsoundstart = () => { console.log("onsoundstart fired"); document.getElementById('status').innerText = 'Status: onsoundstart'; };
+            recognition.onspeechstart = () => { console.log("onspeechstart fired"); document.getElementById('status').innerText = 'Status: onspeechstart'; };
+            
+            recognition.onresult = (event) => {
+                console.log("onresult fired", event);
+                let interim = '';
+                let final = '';
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) final += event.results[i][0].transcript;
+                    else interim += event.results[i][0].transcript;
+                }
+                document.getElementById('output').innerText = final + (final && interim ? ' ' : '') + interim;
+            };
+
+            recognition.onerror = (e) => { 
+                console.error("onerror fired", e.error);
+                document.getElementById('status').innerText = 'Status: ERROR ' + e.error; 
+            };
+            
+            recognition.onend = () => {
+                console.log("onend fired");
+                document.getElementById('status').innerText += ' -> ENDED'; 
+            };
+
+            console.log("Calling start()...");
+            recognition.start();
+        };
+
+        document.getElementById('stopBtn').onclick = () => {
+            if (recognition) {
+                console.log("Calling stop()...");
+                recognition.stop();
+            }
+        };
+    </script>
+</body>
+</html>

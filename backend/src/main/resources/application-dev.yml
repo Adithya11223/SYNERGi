@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    hikari:
+      leak-detection-threshold: 2000 # Detect connection leaks taking > 2 seconds
+
+jwt:
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970 # Local dev secret
+
+app:
+  storage:
+    signature:
+      secret: d7a8e5b4c9f1a23d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d # Local dev secret
+
+clerk:
+  webhook:
+    secret: whsec_secret # Local dev secret
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG # SQL logging for dev only
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.startuphub.backend: DEBUG

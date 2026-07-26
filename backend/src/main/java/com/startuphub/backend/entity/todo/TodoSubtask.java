@@ -1,0 +1,36 @@
+package com.startuphub.backend.entity.todo;
+
+import com.startuphub.backend.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.UUID;
+
+@Entity
+@Table(name = "todo_subtasks")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class TodoSubtask extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true, updatable = false)
+    @Builder.Default
+    private UUID uuid = UUID.randomUUID();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id", nullable = false)
+    private TodoTask task;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean completed = false;
+}

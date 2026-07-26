@@ -1,0 +1,109 @@
+spring:
+  application:
+    name: startup-hub-backend
+    
+  mvc:
+    throw-exception-if-no-handler-found: false
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  web:
+    resources:
+      add-mappings: true
+
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+
+  threads:
+    virtual:
+      enabled: true
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/startuphub}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    hikari:
+      pool-name: StartupHubHikariPool
+      maximum-pool-size: ${DB_MAX_POOL_SIZE:50}
+      minimum-idle: ${DB_MIN_IDLE:10}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:30000}
+      idle-timeout: ${DB_IDLE_TIMEOUT:600000}
+      max-lifetime: ${DB_MAX_LIFETIME:1800000}
+      keepalive-time: ${DB_KEEPALIVE_TIME:300000}
+      validation-timeout: ${DB_VALIDATION_TIMEOUT:5000}
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1
+    postgresql:
+      transactional:
+        lock: false
+
+  jpa:
+    hibernate:
+      ddl-auto: validate # Using Flyway for schema migrations
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${CLERK_ISSUER_URI:https://steady-weevil-73.clerk.accounts.dev}
+          jwk-set-uri: ${CLERK_JWK_SET_URI:https://steady-weevil-73.clerk.accounts.dev/.well-known/jwks.json}
+
+clerk:
+  webhook:
+    secret: ${CLERK_WEBHOOK_SECRET}
+
+jwt:
+  secret: ${JWT_SECRET} # 256-bit secret required
+  expiration: ${JWT_EXPIRATION:86400000} # 1 day in milliseconds
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000} # 7 days in milliseconds
+
+app:
+  otp:
+    expiry-minutes: ${OTP_EXPIRY:10}
+    max-attempts: ${OTP_MAX_ATTEMPTS:3}
+    retention-days: ${OTP_RETENTION_DAYS:1}
+  storage:
+    signature:
+      secret: ${STORAGE_SIGNATURE_SECRET} # Required for signed URLs
+    signed-url:
+      expiration: ${SIGNED_URL_EXPIRATION_SECONDS:43200}
+  websocket:
+    broker:
+      type: ${WEBSOCKET_BROKER_TYPE:simple} # simple or relay
+      relay:
+        host: ${WEBSOCKET_RELAY_HOST:localhost}
+        port: ${WEBSOCKET_RELAY_PORT:61613}
+        client-login: ${WEBSOCKET_RELAY_CLIENT_LOGIN:guest}
+        client-passcode: ${WEBSOCKET_RELAY_CLIENT_PASSCODE:guest}
+        system-login: ${WEBSOCKET_RELAY_SYSTEM_LOGIN:guest}
+        system-passcode: ${WEBSOCKET_RELAY_SYSTEM_PASSCODE:guest}
+
+server:
+  port: ${PORT:1026}
+
+logging:
+  level:
+    root: INFO
+    org.springframework.security: DEBUG
+    com.startuphub.backend: INFO
+
+openai:
+  api:
+    key: ${OPENAI_API_KEY:}
+
+
