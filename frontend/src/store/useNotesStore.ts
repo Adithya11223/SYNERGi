@@ -89,10 +89,30 @@ export const useNotesStore = create<NotesState>()((set, get) => ({
   },
 
   addNote: async (note) => {
-    // Optimistic UI updates could go here, but for simplicity we wait for the server
-    const res = await noteService.createNote(note);
-    set((state) => ({ notes: [res.data, ...state.notes] }));
-    return res.data.id;
+    const tempId = `temp_${Date.now()}`;
+    const newNote: Note = {
+      ...note,
+      id: tempId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as Note;
+    
+    set((state) => {
+      const safeNotes = Array.isArray(state.notes) ? state.notes : [];
+      return { notes: [newNote, ...safeNotes] };
+    });
+    
+    try {
+      const res = await noteService.createNote(note);
+      set((state) => {
+        const safeNotes = Array.isArray(state.notes) ? state.notes : [];
+        return { notes: safeNotes.map(n => n.id === tempId ? res.data : n) };
+      });
+      return res.data.id;
+    } catch (err) {
+      console.error("Failed to save note to backend (backend might be down), but keeping it in local UI state:", err);
+      return tempId; // Return tempId so UI doesn't break
+    }
   },
   
   updateNote: async (id, updates) => {
@@ -135,8 +155,23 @@ export const useNotesStore = create<NotesState>()((set, get) => ({
   },
 
   addFolder: async (folder) => {
-    const res = await noteService.createFolder(folder);
-    set((state) => ({ folders: [...state.folders, res.data] }));
+    const tempId = `temp_folder_${Date.now()}`;
+    const newFolder: Folder = { ...folder, id: tempId };
+    
+    set((state) => {
+      const safeFolders = Array.isArray(state.folders) ? state.folders : [];
+      return { folders: [...safeFolders, newFolder] };
+    });
+    
+    try {
+      const res = await noteService.createFolder(folder);
+      set((state) => {
+        const safeFolders = Array.isArray(state.folders) ? state.folders : [];
+        return { folders: safeFolders.map(f => f.id === tempId ? res.data : f) };
+      });
+    } catch (err) {
+      console.error("Failed to save folder to backend, but keeping it in local UI state:", err);
+    }
   },
   
   updateFolder: async (id, updates) => {

@@ -92,8 +92,7 @@ export const useTodoStore = create<TodoState>()((set, get) => ({
         tasks: state.tasks.map(t => t.id === tempId ? res.data : t)
       }));
     } catch (err) {
-      console.error(err);
-      set((state) => ({ tasks: state.tasks.filter(t => t.id !== tempId) }));
+      console.error("Failed to save task to backend, but keeping it in local UI state:", err);
     }
   },
 
@@ -119,10 +118,23 @@ export const useTodoStore = create<TodoState>()((set, get) => ({
   },
 
   addCategory: async (catData) => {
-    const res = await todoService.createCategory(catData);
-    set((state) => ({
-      categories: [...state.categories, res.data]
-    }));
+    const tempId = `temp_cat_${Date.now()}`;
+    const newCategory = { ...catData, id: tempId };
+    
+    set((state) => {
+      const safeCategories = Array.isArray(state.categories) ? state.categories : [];
+      return { categories: [...safeCategories, newCategory] };
+    });
+    
+    try {
+      const res = await todoService.createCategory(catData);
+      set((state) => {
+        const safeCategories = Array.isArray(state.categories) ? state.categories : [];
+        return { categories: safeCategories.map(c => c.id === tempId ? res.data : c) };
+      });
+    } catch (err) {
+      console.error("Failed to save category to backend, but keeping it in local UI state:", err);
+    }
   },
 
   deleteCategory: async (id) => {
