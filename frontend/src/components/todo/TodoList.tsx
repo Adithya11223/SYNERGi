@@ -29,7 +29,8 @@ export default function TodoList({ tasks, onEditTask }: TodoListProps) {
     <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2">
       <AnimatePresence>
         {tasks.map(task => {
-          const category = categories.find(c => c.id === task.categoryId);
+          const safeCategories = Array.isArray(categories) ? categories : [];
+          const category = safeCategories.find(c => c.id === task.categoryId);
           const isDone = task.status === 'DONE';
 
           return (

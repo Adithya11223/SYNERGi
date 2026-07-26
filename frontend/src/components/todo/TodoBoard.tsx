@@ -56,7 +56,8 @@ export default function TodoBoard({ tasks, onEditTask }: TodoBoardProps) {
           <div className="space-y-3">
             <AnimatePresence>
               {columnTasks.map(task => {
-                const category = categories.find(c => c.id === task.categoryId);
+                const safeCategories = Array.isArray(categories) ? categories : [];
+                const category = safeCategories.find(c => c.id === task.categoryId);
                 const completedSubtasks = task.subtasks?.filter(s => s.completed).length || 0;
                 const totalSubtasks = task.subtasks?.length || 0;
 
