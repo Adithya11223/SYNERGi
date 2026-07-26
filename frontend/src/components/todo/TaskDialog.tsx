@@ -144,7 +144,7 @@ export default function TaskDialog({ open, onOpenChange, taskToEdit }: TaskDialo
                 className="w-full h-10 px-3 rounded-md border border-input bg-white/50 dark:bg-black/20 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               >
                 <option value="none">None</option>
-                {categories.map(c => (
+                {(Array.isArray(categories) ? categories : []).map(c => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
               </select>
