@@ -8,6 +8,7 @@ import EmojiPicker from 'emoji-picker-react';
 import { MediaLightbox } from './MediaLightbox';
 import { apiClient } from '@/lib/apiClient';
 import { VoiceMessagePlayer } from './VoiceMessagePlayer';
+import { ImageBubble } from './ImageBubble';
 
 interface MessageBubbleProps {
   message: ChatMessageResponse;
@@ -299,36 +300,45 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
               {message.attachments && message.attachments.length > 0 && (
                 <div className={`mt-2 ${message.attachments.length > 1 ? 'grid grid-cols-2 gap-2' : 'flex flex-col gap-2'}`}>
                   {message.attachments.map((att) => {
-                    const isImage = att.fileType.startsWith('image/');
-                    const isVideo = att.fileType.startsWith('video/');
-                    const isAudio = att.fileType.startsWith('audio/');
-                    const isPdf = att.fileType === 'application/pdf';
-                    const isOptimistic = att.signedUrl.startsWith('blob:');
-                    const currentUrl = refreshedUrls[att.uuid] || att.signedUrl;
+                    const isImage = att.mimeType.startsWith('image/');
+                    const isVideo = att.mimeType.startsWith('video/');
+                    const isAudio = att.mimeType.startsWith('audio/');
+                    const isPdf = att.mimeType === 'application/pdf';
+                    const isOptimistic = att.url.startsWith('blob:');
+                    const currentUrl = refreshedUrls[att.id] || att.url;
                     
-                    if (isImage || isVideo) {
+                    if (isImage) {
+                      return (
+                        <ImageBubble
+                          key={att.id}
+                          src={currentUrl}
+                          alt={att.fileName}
+                          isOptimistic={isOptimistic}
+                          timestamp={isMediaOnly ? message.createdAt : undefined}
+                          isMe={isMe}
+                          tickStatus={isMediaOnly ? tickStatus : undefined}
+                          onClick={() => setLightbox({ url: currentUrl, type: 'image', fileName: att.fileName })}
+                          onError={!isOptimistic ? () => handleMediaError(att.id, att.url) : undefined}
+                        />
+                      );
+                    } else if (isVideo) {
                       return (
                         <div 
-                          key={att.uuid} 
+                          key={att.id} 
                           className={`relative overflow-hidden cursor-pointer border border-border/50 group rounded-[1rem] ${isMe ? 'rounded-br-sm' : 'rounded-bl-sm'} ${
                             isMediaOnly ? 'max-w-[280px] sm:max-w-[320px] bg-black/5' : 'max-w-full bg-black/20'
                           }`}
-                          onClick={() => setLightbox({ url: currentUrl, type: isImage ? 'image' : 'video', fileName: att.fileName })}
+                          onClick={() => setLightbox({ url: currentUrl, type: 'video', fileName: att.fileName })}
                         >
-                          {isImage ? (
-                            <img src={isOptimistic ? currentUrl : getImageUrl(currentUrl)} alt={att.fileName} className="w-full h-auto object-cover max-h-[350px]" loading="lazy" onError={!isOptimistic ? () => handleMediaError(att.uuid, att.signedUrl) : undefined} />
-                          ) : (
-                            <div className="relative w-full h-auto max-h-[350px]">
-                              <video src={isOptimistic ? currentUrl : getImageUrl(currentUrl)} className="w-full h-full object-cover" onError={!isOptimistic ? () => handleMediaError(att.uuid, att.signedUrl) : undefined} />
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors">
-                                <Play className="w-10 h-10 text-white opacity-90 drop-shadow-md" />
-                              </div>
+                          <div className="relative w-full h-auto max-h-[350px]">
+                            <video src={isOptimistic ? currentUrl : getImageUrl(currentUrl)} className="w-full h-full object-cover" onError={!isOptimistic ? () => handleMediaError(att.id, att.url) : undefined} />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors">
+                              <Play className="w-10 h-10 text-white opacity-90 drop-shadow-md" />
                             </div>
-                          )}
+                          </div>
                           {!isOptimistic && (
                             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                           )}
-                          {/* File Size Badge */}
                           {!isMediaOnly && (
                             <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded-md text-[9px] font-medium text-white/90 shadow-sm">
                               {(att.fileSize / 1024 / 1024).toFixed(1)} MB
@@ -338,13 +348,13 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                       );
                     } else if (isAudio) {
                       return (
-                        <div key={att.uuid} className="bg-black/10 rounded-xl p-1 mb-1">
+                        <div key={att.id} className="bg-black/10 rounded-xl p-1 mb-1">
                           <VoiceMessagePlayer audioUrl={isOptimistic ? currentUrl : getImageUrl(currentUrl)} duration={0} isMe={isMe} />
                         </div>
                       );
                     } else if (isPdf) {
                       return (
-                        <div key={att.uuid} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/80 shadow-sm min-w-[200px] hover:bg-card/80 transition-colors">
+                        <div key={att.id} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/80 shadow-sm min-w-[200px] hover:bg-card/80 transition-colors">
                           <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0 text-red-500">
                             <FileText className="w-5 h-5" />
                           </div>
@@ -372,7 +382,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                     } else {
                       // Generic Document
                       return (
-                        <div key={att.uuid} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/80 shadow-sm min-w-[200px] hover:bg-card/80 transition-colors">
+                        <div key={att.id} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/80 shadow-sm min-w-[200px] hover:bg-card/80 transition-colors">
                           <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 text-blue-500">
                             <File className="w-5 h-5" />
                           </div>

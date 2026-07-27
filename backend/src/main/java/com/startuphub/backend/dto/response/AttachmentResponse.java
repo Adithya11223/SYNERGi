@@ -6,9 +6,10 @@ import lombok.Data;
 @Data
 @Builder
 public class AttachmentResponse {
-    private String uuid;
-    private String signedUrl; // API URL to download/view
+    private String id;
     private String fileName;
-    private String fileType;
+    private String mimeType;
     private Long fileSize;
+    private String url;
+    private String thumbnailUrl;
 }

@@ -213,9 +213,9 @@ public class LocalStorageServiceImpl implements StorageService {
         } else if (fileIdentifier.startsWith("/api/v1/workspaces/")) {
             // e.g. /api/v1/workspaces/{workspaceId}/chat/rooms/{roomId}/attachments/{attachmentId}
             String[] parts = fileIdentifier.split("/");
-            if (parts.length >= 9) {
+            if (parts.length >= 10) {
                 String workspaceId = parts[4];
-                String attachmentId = parts[8];
+                String attachmentId = parts[9];
                 Path workspaceDir = this.rootLocation.resolve(workspaceId);
                 
                 if (Files.exists(workspaceDir) && Files.isDirectory(workspaceDir)) {

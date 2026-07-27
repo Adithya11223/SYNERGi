@@ -230,10 +230,10 @@ public class ChatMessageService extends BaseChatService {
         }
 
         return attachmentPage.map(a -> AttachmentResponse.builder()
-                        .uuid(a.getUuid().toString())
-                        .signedUrl(storageService.generateSignedUrl(a.getFileUrl()))
+                        .id(a.getUuid().toString())
+                        .url(storageService.generateSignedUrl(a.getFileUrl()))
                         .fileName(a.getFileName())
-                        .fileType(a.getFileType())
+                        .mimeType(a.getFileType())
                         .fileSize(a.getFileSize())
                         .build());
     }
@@ -491,10 +491,10 @@ public class ChatMessageService extends BaseChatService {
         List<AttachmentResponse> attachments = (msg.getAttachments() != null ? msg.getAttachments()
                 : new ArrayList<MessageAttachment>()).stream()
                 .map(a -> AttachmentResponse.builder()
-                        .uuid(a.getUuid().toString())
-                        .signedUrl(storageService.generateSignedUrl(a.getFileUrl()))
+                        .id(a.getUuid().toString())
+                        .url(storageService.generateSignedUrl(a.getFileUrl()))
                         .fileName(a.getFileName())
-                        .fileType(a.getFileType())
+                        .mimeType(a.getFileType())
                         .fileSize(a.getFileSize())
                         .build())
                 .collect(Collectors.toList());

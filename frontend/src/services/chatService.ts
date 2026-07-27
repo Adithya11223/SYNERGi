@@ -7,11 +7,12 @@ export interface ReactionResponse {
 }
 
 export interface AttachmentResponse {
-    uuid: string;
-    signedUrl: string;
+    id: string;
+    url: string;
     fileName: string;
-    fileType: string;
+    mimeType: string;
     fileSize: number;
+    thumbnailUrl?: string;
 }
 
 export interface ChatMessage {

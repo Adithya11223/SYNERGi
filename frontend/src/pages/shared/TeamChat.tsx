@@ -378,10 +378,10 @@ export default function TeamChat() {
         const url = URL.createObjectURL(f);
         blobUrlsRef.current.push(url);
         return {
-          uuid: `temp-att-${crypto.randomUUID()}`,
-          signedUrl: url,
+          id: `temp-att-${crypto.randomUUID()}`,
+          url: url,
           fileName: f.name,
-          fileType: f.type,
+          mimeType: f.type,
           fileSize: f.size
         };
       }),
