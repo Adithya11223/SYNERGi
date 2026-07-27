@@ -426,7 +426,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
         {message.reactions && message.reactions.length > 0 && (
           <div className={`flex flex-wrap gap-1 mt-1.5 ${isMe ? 'justify-end' : 'justify-start'}`}>
             <AnimatePresence>
-              {message.reactions.map((r, i) => {
+              {message.reactions.map((r) => {
                 const hasReacted = user?.uuid && r.userUuids?.includes(user.uuid);
                 return (
                   <motion.button 
