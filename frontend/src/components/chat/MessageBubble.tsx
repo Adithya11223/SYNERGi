@@ -276,7 +276,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
             <div className="min-w-[200px]">
               {message.attachments && message.attachments.length > 0 && (
                 <VoiceMessagePlayer 
-                  audioUrl={refreshedUrls[message.attachments[0].uuid] || message.attachments[0].signedUrl}
+                  audioUrl={refreshedUrls[message.attachments[0].id] || message.attachments[0].url}
                   duration={message.voiceNoteDuration || 0}
                   waveformStr={message.voiceNoteWaveform}
                   isMe={isMe}
