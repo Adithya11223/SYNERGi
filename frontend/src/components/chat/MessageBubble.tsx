@@ -397,8 +397,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                   <AlertCircle className={isPrivateChat ? "w-[11px] h-[11px] text-red-400" : "w-3 h-3 text-red-400"} />
                 ) : tickStatus === 'read' ? (
                   <div className="flex gap-[3px] items-center">
-                    <div className={`w-[6px] h-[6px] rounded-full ${isPrivateChat ? 'bg-[#53bdeb]' : 'bg-blue-400'}`} />
-                    <div className={`w-[6px] h-[6px] rounded-full ${isPrivateChat ? 'bg-[#53bdeb]' : 'bg-blue-400'}`} />
+                    <div className="w-[6px] h-[6px] rounded-full bg-[#25D366]" />
+                    <div className="w-[6px] h-[6px] rounded-full bg-[#25D366]" />
                   </div>
                 ) : tickStatus === 'delivered' ? (
                   <div className="flex gap-[3px] items-center">

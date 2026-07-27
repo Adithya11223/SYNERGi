@@ -77,7 +77,7 @@ export const MessageInfoModal: React.FC<MessageInfoModalProps> = ({ isOpen, onCl
                 
                 {/* Read By Section */}
                 <div>
-                  <div className="flex items-center gap-2 mb-3 text-blue-400">
+                  <div className="flex items-center gap-2 mb-3 text-[#25D366]">
                     <CheckCheck className="w-4 h-4" />
                     <h3 className="font-medium text-sm">Read by ({readBy.length})</h3>
                   </div>
