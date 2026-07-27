@@ -269,6 +269,19 @@ public class ChatMessageService extends BaseChatService {
         return storageService.load(attachment.getFileUrl());
     }
 
+    @Transactional(readOnly = true)
+    public Resource downloadAttachmentBySignature(UUID startupUuid, UUID roomUuid, UUID attachmentUuid) {
+        ChatRoom room = getRoom(roomUuid, startupUuid);
+
+        MessageAttachment attachment = messageAttachmentRepository.findByUuid(attachmentUuid)
+                .orElseThrow(() -> new ResourceNotFoundException("Attachment not found"));
+
+        if (!attachment.getMessage().getRoom().getId().equals(room.getId())) {
+            throw new BadRequestException("Attachment does not belong to this room");
+        }
+        return storageService.load(attachment.getFileUrl());
+    }
+
     @Transactional
     public void markAllAsDelivered(String clerkId, UUID startupUuid) {
         User user = getUserByClerkId(clerkId);

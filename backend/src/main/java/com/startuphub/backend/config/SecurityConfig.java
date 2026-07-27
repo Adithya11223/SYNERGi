@@ -75,6 +75,8 @@ public class SecurityConfig {
                 .requestMatchers("/ws/**").permitAll()
                 // Static Uploads
                 .requestMatchers("/uploads/**").permitAll()
+                // Chat Attachments (signed URL validation happens in controller)
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/workspaces/*/chat/rooms/*/attachments/*").permitAll()
                 // Frontend Static Assets & SPA Routes
                 .requestMatchers("/", "/index.html", "/assets/**", "/*.js", "/*.css", "/*.png", "/*.jpg", "/*.svg", "/*.ico").permitAll()
                 // Swagger UI

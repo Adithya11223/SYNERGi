@@ -252,8 +252,7 @@ public class ChatController {
             @PathVariable UUID attachmentUuid,
             @RequestParam(required = false) Long expires,
             @RequestParam(required = false) String signature,
-            HttpServletRequest request,
-            Authentication authentication) {
+            HttpServletRequest request) {
             
         if (expires == null || signature == null) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).build();
@@ -264,7 +263,7 @@ public class ChatController {
             return ResponseEntity.status(org.springframework.http.HttpStatus.FORBIDDEN).build();
         }
 
-        Resource resource = chatMessageService.downloadAttachment(authentication.getName(), startupUuid, roomUuid, attachmentUuid);
+        Resource resource = chatMessageService.downloadAttachmentBySignature(startupUuid, roomUuid, attachmentUuid);
         
         if (!resource.exists()) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).build();

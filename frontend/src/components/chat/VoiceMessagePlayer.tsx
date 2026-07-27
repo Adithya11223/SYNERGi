@@ -51,21 +51,6 @@ export const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ audioUrl
 
     const initAudio = async () => {
       let resolvedUrl = audioUrl;
-      
-      // If it's a backend URL, append the Clerk token as a query parameter
-      // to ensure native <audio> tags authenticate successfully.
-      if (!resolvedUrl.startsWith('blob:') && !resolvedUrl.startsWith('data:')) {
-        try {
-          if (window.Clerk && window.Clerk.session) {
-            const token = await window.Clerk.session.getToken();
-            if (token) {
-              resolvedUrl += (resolvedUrl.includes('?') ? '&' : '?') + `access_token=${token}`;
-            }
-          }
-        } catch (err) {
-          console.warn("Failed to fetch token for audio playback", err);
-        }
-      }
 
       if (!isSubscribed) return;
 
