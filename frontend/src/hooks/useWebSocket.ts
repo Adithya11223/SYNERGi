@@ -439,6 +439,14 @@ export function useWebSocket(workspaceId?: string, roomUuid?: string) {
 
   const reactMessage = useCallback((roomId: string, messageUuid: string, emoji: string) => {
     if (globalStompClient && globalIsConnected) {
+      const { optimisticReact, messages, addOrUpdateMessage } = useChatStore.getState();
+      const currentUser = useAuthStore.getState().user;
+      const originalMessage = messages[roomId]?.find(m => m.uuid === messageUuid);
+
+      if (currentUser) {
+        optimisticReact(roomId, messageUuid, emoji, currentUser.uuid);
+      }
+
       try {
         globalStompClient.publish({
           destination: `/app/chat.reactMessage/${roomId}`,
@@ -446,6 +454,10 @@ export function useWebSocket(workspaceId?: string, roomUuid?: string) {
         });
       } catch (err) {
         console.error("Failed to react to message via WebSocket:", err);
+        // Revert optimistic update on failure
+        if (originalMessage) {
+          addOrUpdateMessage(roomId, originalMessage);
+        }
       }
     }
   }, []);

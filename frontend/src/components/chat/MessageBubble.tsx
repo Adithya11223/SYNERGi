@@ -170,12 +170,18 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                       >
                         <EmojiPicker 
                           theme={"dark" as any} 
+                          lazyLoadEmojis={true}
+                          skinTonesDisabled={false}
+                          searchDisabled={false}
                           onEmojiClick={(emojiData) => {
                             onReact?.(emojiData.emoji);
                             setShowEmojiPicker(false);
                           }}
-                          width={300}
+                          width={320}
                           height={400}
+                          style={{
+                            fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"'
+                          }}
                         />
                       </motion.div>
                     )}
@@ -418,22 +424,37 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
 
         {/* Reactions Rendering */}
         {message.reactions && message.reactions.length > 0 && (
-          <div className={`flex flex-wrap gap-1 mt-1 ${isMe ? 'justify-end' : 'justify-start'}`}>
-            {message.reactions.map((r, i) => {
-              const hasReacted = user?.uuid && r.userUuids?.includes(user.uuid);
-              return (
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => onReact?.(r.emoji)}
-                  key={i} 
-                  className={`flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border transition-colors ${hasReacted ? 'bg-primary/20 border-primary/40 text-primary-foreground' : 'bg-card/80 border-border text-muted-foreground hover:bg-foreground/10'}`}
-                >
-                  <span className="text-sm">{r.emoji}</span>
-                  <span className="opacity-90">{r.count}</span>
-                </motion.button>
-              );
-            })}
+          <div className={`flex flex-wrap gap-1 mt-1.5 ${isMe ? 'justify-end' : 'justify-start'}`}>
+            <AnimatePresence>
+              {message.reactions.map((r, i) => {
+                const hasReacted = user?.uuid && r.userUuids?.includes(user.uuid);
+                return (
+                  <motion.button 
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => onReact?.(r.emoji)}
+                    key={r.emoji} // Use emoji as key for correct animation
+                    className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[12px] font-medium border shadow-sm transition-all ${
+                      hasReacted 
+                      ? 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20' 
+                      : 'bg-card border-border/60 text-muted-foreground hover:bg-foreground/5'
+                    }`}
+                  >
+                    <span 
+                      className="text-[13px] leading-none" 
+                      style={{ fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"' }}
+                    >
+                      {r.emoji}
+                    </span>
+                    <span className="opacity-90 min-w-[8px] text-center">{r.count}</span>
+                  </motion.button>
+                );
+              })}
+            </AnimatePresence>
           </div>
         )}
       </div>

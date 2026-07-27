@@ -56,6 +56,7 @@ interface ChatState {
   clearFailedMessage: (roomUuid: any, messageUuid: string) => void;
   updateMessageProgress: (roomUuid: any, messageUuid: string, progress: number, isUploading?: boolean, isFailed?: boolean) => void;
   removeMessage: (roomUuid: any, messageUuid: string) => void;
+  optimisticReact: (roomUuid: string, messageUuid: string, emoji: string, userUuid: string) => void;
 }
 
 export const useChatStore = create<ChatState>()((set) => ({
@@ -380,5 +381,58 @@ export const useChatStore = create<ChatState>()((set) => ({
     const failedSet = new Set(state.failedMessages[roomUuid] || []);
     failedSet.delete(messageUuid);
     return { failedMessages: { ...state.failedMessages, [roomUuid]: failedSet } };
+  }),
+
+  optimisticReact: (roomUuid, messageUuid, emoji, userUuid) => set((state) => {
+    const roomMsgs = state.messages[roomUuid] || [];
+    const index = roomMsgs.findIndex(m => m.uuid === messageUuid);
+    if (index === -1) return state;
+
+    const newMsgs = [...roomMsgs];
+    const msg = { ...newMsgs[index] };
+    const reactions = msg.reactions ? [...msg.reactions] : [];
+
+    // Find if user already reacted with ANY emoji
+    const existingReactionIndex = reactions.findIndex(r => r.userUuids && r.userUuids.includes(userUuid));
+    let previousEmoji = null;
+
+    if (existingReactionIndex >= 0) {
+      const r = { ...reactions[existingReactionIndex] };
+      previousEmoji = r.emoji;
+      
+      // Remove user from this reaction
+      r.userUuids = r.userUuids.filter(id => id !== userUuid);
+      r.count = r.userUuids.length;
+      
+      if (r.count === 0) {
+        reactions.splice(existingReactionIndex, 1);
+      } else {
+        reactions[existingReactionIndex] = r;
+      }
+    }
+
+    // If they clicked a DIFFERENT emoji than they had before, add it
+    if (previousEmoji !== emoji) {
+      const targetReactionIndex = reactions.findIndex(r => r.emoji === emoji);
+      if (targetReactionIndex >= 0) {
+        const tr = { ...reactions[targetReactionIndex] };
+        tr.userUuids = [...(tr.userUuids || []), userUuid];
+        tr.count = tr.userUuids.length;
+        reactions[targetReactionIndex] = tr;
+      } else {
+        reactions.push({
+          emoji,
+          count: 1,
+          userUuids: [userUuid]
+        });
+      }
+    }
+
+    msg.reactions = reactions;
+    newMsgs[index] = msg as ChatMessageResponse;
+
+    return {
+      messages: { ...state.messages, [roomUuid]: newMsgs }
+    };
   }),
 }));
