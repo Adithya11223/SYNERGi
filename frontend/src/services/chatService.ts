@@ -71,10 +71,19 @@ export interface ChatMessageResponse {
     statuses?: MessageStatusResponse[];
     // Frontend-only properties:
     status?: 'sending' | 'sent' | 'failed'; 
-    isUploading?: boolean;
+    isUploading?: boolean; // Keep for backward compatibility with old forms
     uploadProgress?: number;
     isFailed?: boolean;
     abortController?: AbortController;
+    
+    // Explicit Media UI Flags
+    isSender?: boolean;
+    uploadStatus?: 'SELECTED' | 'UPLOADING' | 'UPLOADED' | 'FAILED' | 'IDLE';
+    downloadStatus?: 'MESSAGE_RECEIVED' | 'FETCHING_MEDIA' | 'MEDIA_READY' | 'FAILED' | 'IDLE';
+    mediaReady?: boolean;
+    isLocalPreview?: boolean;
+    isDownloaded?: boolean;
+    downloadProgress?: number;
 }
 
 export interface ChatRoomResponse {

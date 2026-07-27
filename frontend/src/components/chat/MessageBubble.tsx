@@ -7,6 +7,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import EmojiPicker from 'emoji-picker-react';
 import { MediaLightbox } from './MediaLightbox';
 import { apiClient } from '@/lib/apiClient';
+import { useChatStore } from '@/store/useChatStore';
 import { VoiceMessagePlayer } from './VoiceMessagePlayer';
 import { ImageBubble } from './ImageBubble';
 
@@ -313,11 +314,14 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                           key={att.id}
                           src={currentUrl}
                           alt={att.fileName}
-                          isOptimistic={isOptimistic}
                           timestamp={isMediaOnly ? message.createdAt : undefined}
                           isMe={isMe}
                           tickStatus={isMediaOnly ? tickStatus : undefined}
-                          isUploading={message.isUploading}
+                          isSender={message.isSender}
+                          uploadStatus={message.uploadStatus}
+                          downloadStatus={message.downloadStatus}
+                          mediaReady={message.mediaReady}
+                          isLocalPreview={message.isLocalPreview}
                           uploadProgress={message.uploadProgress}
                           onCancel={(e) => {
                             e.stopPropagation();
@@ -325,6 +329,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                           }}
                           onClick={() => setLightbox({ url: currentUrl, type: 'image', fileName: att.fileName })}
                           onError={!isOptimistic ? () => handleMediaError(att.id, att.url) : undefined}
+                          onMediaLoaded={(!message.isSender && !message.mediaReady) ? () => useChatStore.getState().setMediaReady(message.uuid) : undefined}
                         />
                       );
                     } else if (isVideo) {

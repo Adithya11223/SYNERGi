@@ -55,6 +55,7 @@ interface ChatState {
   setFailedMessage: (roomUuid: any, messageUuid: string) => void;
   clearFailedMessage: (roomUuid: any, messageUuid: string) => void;
   updateMessageProgress: (roomUuid: any, messageUuid: string, progress: number, isUploading?: boolean, isFailed?: boolean) => void;
+  setMediaReady: (messageUuid: string) => void;
   removeMessage: (roomUuid: any, messageUuid: string) => void;
   optimisticReact: (roomUuid: string, messageUuid: string, emoji: string, userUuid: string) => void;
 }
@@ -93,6 +94,15 @@ export const useChatStore = create<ChatState>()((set) => ({
       newMsgs = [...roomMsgs];
       const mergedMessage = { ...newMsgs[index], ...message, status: 'sent' } as ChatMessageResponse;
       
+      // Enforce sender state transition if we are confirming an optimistic message
+      if ((message as any).tempUuid && newMsgs[index].tempUuid === (message as any).tempUuid) {
+        mergedMessage.isSender = true;
+        mergedMessage.uploadStatus = 'UPLOADED';
+        mergedMessage.isUploading = false; // backward compat
+        mergedMessage.isLocalPreview = false;
+        mergedMessage.mediaReady = true;
+      }
+      
       // Apply any pending status updates
       const pendingUpdates = state.pendingStatusUpdates[message.uuid];
       if (pendingUpdates && pendingUpdates.length > 0) {
@@ -119,6 +129,19 @@ export const useChatStore = create<ChatState>()((set) => ({
     } else {
       // Add new message
       const newMessage = { ...message, status: 'sent' } as ChatMessageResponse;
+      
+      // Explicit Receiver media state logic
+      const isMe = message.senderUuid === useAuthStore.getState().user?.uuid;
+      newMessage.isSender = isMe;
+      
+      if (!isMe && newMessage.attachments && newMessage.attachments.length > 0) {
+          newMessage.downloadStatus = 'FETCHING_MEDIA';
+          newMessage.mediaReady = false;
+      } else if (isMe && newMessage.attachments && newMessage.attachments.length > 0) {
+          // Fallback if we somehow didn't have an optimistic message
+          newMessage.uploadStatus = 'UPLOADED';
+          newMessage.mediaReady = true;
+      }
       
       // Apply any pending status updates
       const pendingUpdates = state.pendingStatusUpdates[message.uuid];
@@ -188,8 +211,32 @@ export const useChatStore = create<ChatState>()((set) => ({
     if (index === -1) return state;
     
     const newMsgs = [...roomMsgs];
-    newMsgs[index] = { ...newMsgs[index], uploadProgress: progress, isUploading, isFailed } as ChatMessageResponse;
+    const msg = newMsgs[index];
+    const uploadStatus = isFailed ? 'FAILED' : (isUploading ? 'UPLOADING' : 'UPLOADED');
+    
+    newMsgs[index] = { ...msg, uploadProgress: progress, isUploading, isFailed, uploadStatus } as ChatMessageResponse;
     return { messages: { ...state.messages, [roomUuid]: newMsgs } };
+  }),
+  
+  setMediaReady: (messageUuid: string) => set((state) => {
+    let foundRoom = '';
+    let index = -1;
+    for (const room of Object.keys(state.messages)) {
+      index = state.messages[room].findIndex(m => m.uuid === messageUuid);
+      if (index !== -1) {
+        foundRoom = room;
+        break;
+      }
+    }
+    if (index === -1) return state;
+    
+    const newMsgs = [...state.messages[foundRoom]];
+    newMsgs[index] = { 
+      ...newMsgs[index], 
+      mediaReady: true,
+      downloadStatus: 'MEDIA_READY'
+    } as ChatMessageResponse;
+    return { messages: { ...state.messages, [foundRoom]: newMsgs } };
   }),
 
   removeMessage: (roomUuid, messageUuid) => set((state) => {

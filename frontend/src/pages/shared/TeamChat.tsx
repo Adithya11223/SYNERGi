@@ -387,6 +387,10 @@ export default function TeamChat() {
       }),
       isUploading: true,
       uploadProgress: 0,
+      isSender: true,
+      uploadStatus: 'UPLOADING',
+      isLocalPreview: true,
+      mediaReady: true,
       abortController
     };
 
