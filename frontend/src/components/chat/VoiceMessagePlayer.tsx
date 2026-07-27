@@ -13,6 +13,7 @@ export const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ audioUrl
   const [progress, setProgress] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [currentTime, setCurrentTime] = useState(0);
+  const [loadedDuration, setLoadedDuration] = useState(duration);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const waveform = waveformStr ? JSON.parse(waveformStr) as number[] : Array(40).fill(10);
@@ -28,7 +29,11 @@ export const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ audioUrl
     const handleTimeUpdate = () => {
       if (audio) {
         setCurrentTime(audio.currentTime);
-        setProgress((audio.currentTime / duration) * 100);
+        // Fallback: if loadedDuration is still 0 but we have a valid audio duration
+        const activeDuration = loadedDuration > 0 ? loadedDuration : (audio.duration && audio.duration !== Infinity ? audio.duration : duration);
+        if (activeDuration > 0) {
+            setProgress((audio.currentTime / activeDuration) * 100);
+        }
       }
     };
 
@@ -36,6 +41,12 @@ export const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ audioUrl
       setIsPlaying(false);
       setProgress(0);
       setCurrentTime(0);
+    };
+
+    const handleLoadedMetadata = () => {
+      if (audio && audio.duration && audio.duration !== Infinity) {
+        setLoadedDuration(audio.duration);
+      }
     };
 
     const initAudio = async () => {
@@ -63,6 +74,7 @@ export const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ audioUrl
 
       audio.addEventListener('timeupdate', handleTimeUpdate);
       audio.addEventListener('ended', handleEnded);
+      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
       
       // Sync playback rate if already changed
       audio.playbackRate = playbackRate;
@@ -75,6 +87,7 @@ export const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ audioUrl
       if (audio) {
         audio.removeEventListener('timeupdate', handleTimeUpdate);
         audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
         audio.pause();
       }
     };
@@ -105,7 +118,11 @@ export const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ audioUrl
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const percentage = x / rect.width;
-    const newTime = percentage * duration;
+    
+    const activeDuration = loadedDuration > 0 ? loadedDuration : duration;
+    if (activeDuration <= 0) return;
+
+    const newTime = percentage * activeDuration;
     audioRef.current.currentTime = newTime;
     setProgress(percentage * 100);
     setCurrentTime(newTime);
@@ -159,7 +176,7 @@ export const VoiceMessagePlayer: React.FC<VoiceMessagePlayerProps> = ({ audioUrl
         {/* Timers & Speed */}
         <div className="flex items-center justify-between mt-1 mb-2">
           <span className={`text-[11px] tracking-wide font-medium ${isMe ? 'text-white/70' : 'text-foreground/60'}`}>
-            {isPlaying || progress > 0 ? formatTime(currentTime) : formatTime(duration)}
+            {isPlaying || progress > 0 ? formatTime(currentTime) : (loadedDuration > 0 ? formatTime(loadedDuration) : '--:--')}
           </span>
           <div className="flex items-center gap-1">
             {playbackRate !== 1 && (

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ChatMessageResponse } from '@/services/chatService';
-import { Reply, Copy, Trash2, Smile, Edit2, Play, Forward, Pin, AlertCircle, Clock, FileText, Download, X } from 'lucide-react';
+import { Reply, Copy, Trash2, Smile, Edit2, Play, Forward, Pin, AlertCircle, Clock, FileText, Download, X, File } from 'lucide-react';
 import { getImageUrl } from '@/lib/utils';
 import { useAuthStore } from '@/store/useAuthStore';
 import EmojiPicker from 'emoji-picker-react';
@@ -301,43 +301,60 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                   {message.attachments.map((att) => {
                     const isImage = att.fileType.startsWith('image/');
                     const isVideo = att.fileType.startsWith('video/');
+                    const isAudio = att.fileType.startsWith('audio/');
+                    const isPdf = att.fileType === 'application/pdf';
                     const isOptimistic = att.signedUrl.startsWith('blob:');
                     const currentUrl = refreshedUrls[att.uuid] || att.signedUrl;
                     
-                      if (isImage || isVideo) {
-                        return (
-                          <div 
-                            key={att.uuid} 
-                            className={`relative overflow-hidden bg-black/20 cursor-pointer border border-border group rounded-[1.25rem] ${isMe ? 'rounded-br-sm' : 'rounded-bl-sm'} ${
-                              isMediaOnly ? 'max-w-[280px] sm:max-w-[320px]' : 'max-w-full mt-2'
-                            }`}
-                            onClick={() => setLightbox({ url: currentUrl, type: isImage ? 'image' : 'video', fileName: att.fileName })}
-                          >
-                            {isImage ? (
-                              <img src={isOptimistic ? currentUrl : getImageUrl(currentUrl)} alt={att.fileName} className="w-full h-auto object-cover max-h-[350px]" onError={!isOptimistic ? () => handleMediaError(att.uuid, att.signedUrl) : undefined} />
-                            ) : (
-                              <div className="relative w-full h-auto max-h-[350px]">
-                                <video src={isOptimistic ? currentUrl : getImageUrl(currentUrl)} className="w-full h-full object-cover" onError={!isOptimistic ? () => handleMediaError(att.uuid, att.signedUrl) : undefined} />
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors">
-                                  <Play className="w-8 h-8 text-foreground opacity-80" />
-                                </div>
+                    if (isImage || isVideo) {
+                      return (
+                        <div 
+                          key={att.uuid} 
+                          className={`relative overflow-hidden cursor-pointer border border-border/50 group rounded-[1rem] ${isMe ? 'rounded-br-sm' : 'rounded-bl-sm'} ${
+                            isMediaOnly ? 'max-w-[280px] sm:max-w-[320px] bg-black/5' : 'max-w-full bg-black/20'
+                          }`}
+                          onClick={() => setLightbox({ url: currentUrl, type: isImage ? 'image' : 'video', fileName: att.fileName })}
+                        >
+                          {isImage ? (
+                            <img src={isOptimistic ? currentUrl : getImageUrl(currentUrl)} alt={att.fileName} className="w-full h-auto object-cover max-h-[350px]" loading="lazy" onError={!isOptimistic ? () => handleMediaError(att.uuid, att.signedUrl) : undefined} />
+                          ) : (
+                            <div className="relative w-full h-auto max-h-[350px]">
+                              <video src={isOptimistic ? currentUrl : getImageUrl(currentUrl)} className="w-full h-full object-cover" onError={!isOptimistic ? () => handleMediaError(att.uuid, att.signedUrl) : undefined} />
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/50 transition-colors">
+                                <Play className="w-10 h-10 text-white opacity-90 drop-shadow-md" />
                               </div>
-                            )}
-                            <div className="absolute bottom-1.5 right-1.5 bg-black/50 backdrop-blur-md px-1.5 py-0.5 rounded-md text-[9px] font-medium text-foreground/90 shadow-sm">
+                            </div>
+                          )}
+                          {!isOptimistic && (
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                          )}
+                          {/* File Size Badge */}
+                          {!isMediaOnly && (
+                            <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-1.5 py-0.5 rounded-md text-[9px] font-medium text-white/90 shadow-sm">
                               {(att.fileSize / 1024 / 1024).toFixed(1)} MB
                             </div>
-                          </div>
-                        );
-                    } else {
-                      // Document
+                          )}
+                        </div>
+                      );
+                    } else if (isAudio) {
                       return (
-                        <div key={att.uuid} className="flex items-center gap-3 p-2.5 rounded-lg bg-black/20 border border-white/5 min-w-[180px]">
-                          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0 text-primary">
+                        <div key={att.uuid} className="bg-black/10 rounded-xl p-1 mb-1">
+                          <VoiceMessagePlayer audioUrl={isOptimistic ? currentUrl : getImageUrl(currentUrl)} duration={0} isMe={isMe} />
+                        </div>
+                      );
+                    } else if (isPdf) {
+                      return (
+                        <div key={att.uuid} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/80 shadow-sm min-w-[200px] hover:bg-card/80 transition-colors">
+                          <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0 text-red-500">
                             <FileText className="w-5 h-5" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate text-foreground/90">{att.fileName}</p>
-                            <p className="text-[10px] text-foreground/50">{(att.fileSize / 1024 / 1024).toFixed(1)} MB</p>
+                            <p className="text-[13px] font-semibold truncate text-foreground/90">{att.fileName}</p>
+                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-muted-foreground font-medium uppercase tracking-wider">
+                              <span>PDF</span>
+                              <span className="w-1 h-1 rounded-full bg-muted-foreground/30"></span>
+                              <span>{(att.fileSize / 1024 / 1024).toFixed(1)} MB</span>
+                            </div>
                           </div>
                           {!isOptimistic && (
                             <a 
@@ -345,7 +362,35 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                               download={att.fileName}
                               target="_blank"
                               rel="noreferrer"
-                              className="p-1.5 rounded-full hover:bg-foreground/10 text-foreground/70 transition-colors shrink-0"
+                              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-foreground/10 text-foreground/70 transition-colors shrink-0"
+                            >
+                              <Download className="w-4 h-4" />
+                            </a>
+                          )}
+                        </div>
+                      );
+                    } else {
+                      // Generic Document
+                      return (
+                        <div key={att.uuid} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/80 shadow-sm min-w-[200px] hover:bg-card/80 transition-colors">
+                          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 text-blue-500">
+                            <File className="w-5 h-5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-semibold truncate text-foreground/90">{att.fileName}</p>
+                            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-muted-foreground font-medium uppercase tracking-wider">
+                              <span>DOC</span>
+                              <span className="w-1 h-1 rounded-full bg-muted-foreground/30"></span>
+                              <span>{(att.fileSize / 1024 / 1024).toFixed(1)} MB</span>
+                            </div>
+                          </div>
+                          {!isOptimistic && (
+                            <a 
+                              href={getImageUrl(currentUrl)} 
+                              download={att.fileName}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-foreground/10 text-foreground/70 transition-colors shrink-0"
                             >
                               <Download className="w-4 h-4" />
                             </a>
