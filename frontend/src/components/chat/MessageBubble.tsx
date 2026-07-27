@@ -317,6 +317,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
                           timestamp={isMediaOnly ? message.createdAt : undefined}
                           isMe={isMe}
                           tickStatus={isMediaOnly ? tickStatus : undefined}
+                          isUploading={message.isUploading}
+                          uploadProgress={message.uploadProgress}
+                          onCancel={(e) => {
+                            e.stopPropagation();
+                            message.abortController?.abort();
+                          }}
                           onClick={() => setLightbox({ url: currentUrl, type: 'image', fileName: att.fileName })}
                           onError={!isOptimistic ? () => handleMediaError(att.id, att.url) : undefined}
                         />
@@ -415,7 +421,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = React.memo(({
           )}
           
           {/* Upload Progress Overlay */}
-          {message.isUploading && (
+          {message.isUploading && !message.attachments?.every(att => att.mimeType.startsWith('image/')) && (
             <div className="mt-2 flex items-center gap-3 bg-black/20 p-2 rounded-lg border border-border">
               <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
                 <div 

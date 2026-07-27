@@ -263,13 +263,14 @@ export const chatService = {
         await api.put(`/workspaces/${startupUuid}/chat/groups/${roomUuid}/members/${targetUserUuid}/role?role=${role}`);
     },
     
-    sendMessageWithFiles: async (startupUuid: string, roomUuid: string, content: string, replyToMessageUuid: string | undefined, isVoiceNote: boolean, voiceNoteDuration: number | undefined, voiceNoteWaveform: string | undefined, files: File[], onUploadProgress?: (progressEvent: any) => void, abortSignal?: AbortSignal) => {
+    sendMessageWithFiles: async (startupUuid: string, roomUuid: string, content: string, replyToMessageUuid: string | undefined, isVoiceNote: boolean, voiceNoteDuration: number | undefined, voiceNoteWaveform: string | undefined, tempUuid: string | undefined, files: File[], onUploadProgress?: (progressEvent: any) => void, abortSignal?: AbortSignal) => {
         const formData = new FormData();
         if (content) formData.append('content', content);
         if (replyToMessageUuid) formData.append('replyToMessageUuid', replyToMessageUuid);
         if (isVoiceNote) formData.append('isVoiceNote', 'true');
         if (voiceNoteDuration !== undefined) formData.append('voiceNoteDuration', voiceNoteDuration.toString());
         if (voiceNoteWaveform !== undefined) formData.append('voiceNoteWaveform', voiceNoteWaveform);
+        if (tempUuid) formData.append('tempUuid', tempUuid);
         files.forEach(file => formData.append('files', file));
         
         const response = await api.post<{ data: ChatMessageResponse }>(`/workspaces/${startupUuid}/chat/rooms/${roomUuid}/messages/with-files`, formData, {

@@ -402,6 +402,7 @@ export default function TeamChat() {
         false,
         undefined,
         undefined,
+        tempUuid,
         files,
         (progressEvent) => {
           const progress = progressEvent.total ? Math.round((progressEvent.loaded * 100) / progressEvent.total) : 0;

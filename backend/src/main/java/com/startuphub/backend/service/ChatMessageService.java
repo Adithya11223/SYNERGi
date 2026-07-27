@@ -145,7 +145,7 @@ public class ChatMessageService extends BaseChatService {
 
     @Transactional
     public ChatMessageResponse sendMessageWithFiles(String clerkId, UUID startupUuid, UUID roomUuid, String content,
-            String replyToMessageUuid, Boolean isVoiceNote, Integer voiceNoteDuration, String voiceNoteWaveform,
+            String replyToMessageUuid, Boolean isVoiceNote, Integer voiceNoteDuration, String voiceNoteWaveform, String tempUuid,
             List<MultipartFile> files) {
         User user = getUserByClerkId(clerkId);
         ChatRoom room = getRoom(roomUuid, startupUuid);
@@ -203,6 +203,10 @@ public class ChatMessageService extends BaseChatService {
         message.setAttachments(attachments); // For mapping immediately
 
         ChatMessageResponse response = mapMessageToResponse(message, room, user);
+        
+        if (tempUuid != null && !tempUuid.isEmpty()) {
+            response.setTempUuid(tempUuid);
+        }
 
         // Broadcast to WebSocket clients seamlessly!
         messagingTemplate.convertAndSend("/topic/room." + roomUuid.toString(), response);

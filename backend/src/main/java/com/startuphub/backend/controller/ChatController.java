@@ -223,11 +223,12 @@ public class ChatController {
             @RequestParam(required = false, defaultValue = "false") Boolean isVoiceNote,
             @RequestParam(required = false) Integer voiceNoteDuration,
             @RequestParam(required = false) String voiceNoteWaveform,
+            @RequestParam(required = false) String tempUuid,
             @RequestPart(value = "files") List<MultipartFile> files,
             Authentication authentication) {
         
         ChatMessageResponse response = chatMessageService.sendMessageWithFiles(
-                authentication.getName(), startupUuid, roomUuid, content, replyToMessageUuid, isVoiceNote, voiceNoteDuration, voiceNoteWaveform, files);
+                authentication.getName(), startupUuid, roomUuid, content, replyToMessageUuid, isVoiceNote, voiceNoteDuration, voiceNoteWaveform, tempUuid, files);
                 
         return ResponseEntity.ok(ApiResponse.success(response, "Message and files uploaded successfully"));
     }
