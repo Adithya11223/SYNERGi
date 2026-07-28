@@ -38,7 +38,7 @@ public class MeetingWebSocketController {
     public void signal(@DestinationVariable UUID meetingUuid, @Payload SignalMessage message, Authentication authentication, SimpMessageHeaderAccessor headerAccessor) {
         if (authentication == null || !authentication.isAuthenticated()) return;
         
-        User user = userRepository.findByEmail(authentication.getName()).orElse(null);
+        User user = userRepository.findByClerkId(authentication.getName()).orElse(null);
         if (user == null) return;
 
         // Force sender identity for security

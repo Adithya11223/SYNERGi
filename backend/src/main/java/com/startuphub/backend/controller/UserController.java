@@ -54,7 +54,7 @@ public class UserController {
             throw new BadRequestException("Username must be 4-20 characters long and contain only lowercase letters, numbers, and underscores.");
         }
 
-        User user = userRepository.findByEmail(authentication.getName())
+        User user = userRepository.findByClerkId(authentication.getName())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (user.getUsername() != null && !user.getUsername().isEmpty()) {
